@@ -2,75 +2,214 @@
 <html lang="id">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Risk Manager</title>
-  
-  <style>
-    body {
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
-      padding: 20px;
-    }
-    
-    input,
-    select {
-      padding: 6px;
-      border-radius: 4px;
-      border: none;
-      margin: 3px;
-    }
-    
-    button {
-      padding: 6px 12px;
-      background: #22c55e;
-      border: none;
-      color: white;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    
-    table {
-      width: 100%;
-      margin-top: 15px;
-      border-collapse: collapse;
-    }
-    
-    th,
-    td {
-      padding: 8px;
-      border-bottom: 1px solid #334155;
-      text-align: center;
-    }
-    
-    .result {
-      margin-top: 20px;
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 8px;
-    }
-    
-    .warning {
-      color: #ef4444;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Trading Risk Manager</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+font-family:system-ui;
+background:linear-gradient(135deg,#0f172a,#020617);
+color:white;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+}
+
+h2{
+text-align:center;
+margin-bottom:20px;
+}
+
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+margin-bottom:20px;
+box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+
+.inputs{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.inputs div{
+flex:1;
+min-width:120px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+border-radius:6px;
+border:none;
+background:#0f172a;
+color:white;
+}
+
+select.pair {
+  width:120px;
+}
+
+
+.btn-wrapper{
+display:flex;
+justify-content:center;
+margin-top:15px;
+}
+
+#btn-add{
+padding:10px 20px;
+background:#22c55e;
+border:none;
+color:white;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+}
+
+#btn-add:hover{
+transform:scale(1.05);
+background:#16a34a;
+}
+
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th{
+background:#0f172a;
+padding:10px;
+}
+
+td{
+padding:8px;
+border-bottom:1px solid #334155;
+text-align:center;
+}
+
+.delete{
+padding:8px 16px;
+position: relative;
+background:#22c55e;
+border:none;
+color:white;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.delete:hover{
+transform:scale(1.05);
+background:#16a34a;
+}
+.delete{
+background:#ef4444;
+}
+
+.delete:hover{
+background:#dc2626;
+}
+
+.result{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.stat{
+background:#020617;
+padding:12px;
+border-radius:8px;
+text-align:center;
+}
+
+.stat span{
+font-size:18px;
+font-weight:bold;
+display:block;
+margin-top:4px;
+}
+
+.progress{
+height:10px;
+background:#0f172a;
+border-radius:10px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.bar{
+height:100%;
+background:#22c55e;
+width:0%;
+transition:0.3s;
+}
+
+.warning{
+margin-top:10px;
+font-weight:bold;
+color:#f87171;
+text-align:center;
+}
+
+@media(max-width:600px){
+
+.result{
+grid-template-columns:1fr;
+}
+
+table{
+font-size:14px;
+}
+
+}
+
+</style>
 </head>
 
 
 <body>
-  
-  <h2>Trading Risk Calculator</h2>
-  
-  DD Daily :
-  <input id="ddDaily" type="number" value="150">
-  
-  DD Max :
-  <input id="ddMax" type="number" value="190">
-  
-  <br><br>
-  
-  <button onclick="addRow()">Tambah Pair</button>
+
+<div class="container">
+
+<h2>Trading Risk Manager</h2>
+
+<div class="card">
+
+<div class="inputs">
+
+<div>
+<label>DD Daily</label>
+<input id="ddDaily" type="number" value="150">
+</div>
+
+<div>
+<label>DD Max</label>
+<input id="ddMax" type="number" value="190">
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
   
   <table id="table">
     
@@ -78,7 +217,7 @@
       <tr>
         <th>Pair</th>
         <th>Risk ($)</th>
-        <th>Hapus</th>
+        <th></th>
       </tr>
     </thead>
     
@@ -86,40 +225,62 @@
     
   </table>
   
-  
-  <div class="result">
-    
-    Total Risk : <span id="totalRisk">0</span>
-    
-    <br><br>
-    
-    Sisa DD Daily : <span id="remainDaily">0</span>
-    
-    <br><br>
-    
-    Sisa DD Max : <span id="remainMax">0</span>
-    
-    <br><br>
-    
-    <span id="warning"></span>
-    
+  <div class="btn-wrapper">
+    <button onclick="addRow()" id="btn-add">+ Tambah Pair</button>
   </div>
   
-  
-  <script>
-    const pairs = [
-      "USDJPY", "EURJPY", "GBPJPY", "AUDJPY",
-      "NZDJPY", "CHFJPY", "CADJPY"
-    ]
-    
-    
-    function addRow() {
-      
-      const tbody = document.querySelector("#table tbody")
-      
-      const tr = document.createElement("tr")
-      
-      tr.innerHTML = `
+</div>
+
+
+<div class="card result">
+
+<div class="stat">
+Total Risk
+<span id="totalRisk">0</span>
+</div>
+
+<div class="stat">
+Sisa DD Daily
+<span id="remainDaily">0</span>
+</div>
+
+<div class="stat">
+Sisa DD Max
+<span id="remainMax">0</span>
+</div>
+
+<div class="stat">
+Risk Usage
+<span id="riskPercent">0%</span>
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+
+</div>
+
+</div>
+
+<div id="warning" class="warning"></div>
+
+</div>
+
+
+<script>
+
+const pairs=[
+"USDJPY","EURJPY","GBPJPY","AUDJPY",
+"NZDJPY","CHFJPY","CADJPY"
+]
+
+
+function addRow(){
+
+const tbody=document.querySelector("#table tbody")
+
+const tr=document.createElement("tr")
+
+tr.innerHTML=`
 
 <td>
 <select class="pair">
@@ -132,80 +293,84 @@ ${pairs.map(p=>`<option>${p}</option>`).join("")}
 </td>
 
 <td>
-<button onclick="removeRow(this)">X</button>
+<button class="delete" onclick="removeRow(this)">X</button>
 </td>
 
 `
-      
-      tbody.appendChild(tr)
-      
-      attachEvents()
-      
-    }
-    
-    
-    
-    function removeRow(btn) {
-      
-      btn.parentElement.parentElement.remove()
-      
-      calculate()
-      
-    }
-    
-    
-    
-    function attachEvents() {
-      
-      document.querySelectorAll(".risk").forEach(i => {
-        
-        i.oninput = calculate
-        
-      })
-      
-    }
-    
-    
-    
-    function calculate() {
-      
-      let total = 0
-      
-      document.querySelectorAll(".risk").forEach(i => {
-        
-        total += parseFloat(i.value) || 0
-        
-      })
-      
-      const ddDaily = parseFloat(ddDailyInput.value) || 0
-      const ddMax = parseFloat(ddMaxInput.value) || 0
-      
-      document.getElementById("totalRisk").innerText = total.toFixed(2)
-      
-      document.getElementById("remainDaily").innerText = (ddDaily - total).toFixed(2)
-      
-      document.getElementById("remainMax").innerText = (ddMax - total).toFixed(2)
-      
-      let warn = ""
-      
-      if (total > ddDaily) warn = "⚠ Melebihi DD Daily!"
-      
-      if (total > ddMax) warn = "⛔ Melebihi DD Max!"
-      
-      document.getElementById("warning").innerText = warn
-      
-    }
-    
-    const ddDailyInput = document.getElementById("ddDaily")
-    const ddMaxInput = document.getElementById("ddMax")
-    
-    ddDailyInput.oninput = calculate
-    ddMaxInput.oninput = calculate
-    
-    addRow()
-    addRow()
-  </script>
-  
-</body>
 
-</html>
+tbody.appendChild(tr)
+
+attachEvents()
+
+}
+
+
+
+function removeRow(btn){
+
+btn.parentElement.parentElement.remove()
+
+calculate()
+
+}
+
+
+
+function attachEvents(){
+
+document.querySelectorAll(".risk").forEach(i=>{
+i.oninput=calculate
+})
+
+}
+
+
+
+function calculate(){
+
+let total=0
+
+document.querySelectorAll(".risk").forEach(i=>{
+total+=parseFloat(i.value)||0
+})
+
+const ddDaily=parseFloat(ddDailyInput.value)||0
+const ddMax=parseFloat(ddMaxInput.value)||0
+
+document.getElementById("totalRisk").innerText=total.toFixed(2)
+
+document.getElementById("remainDaily").innerText=(ddDaily-total).toFixed(2)
+
+document.getElementById("remainMax").innerText=(ddMax-total).toFixed(2)
+
+let percent=(total/ddMax)*100
+if(percent<0)percent=0
+
+document.getElementById("riskPercent").innerText=percent.toFixed(1)+"%"
+
+document.getElementById("bar").style.width=percent+"%"
+
+let warn=""
+
+if(total>ddDaily) warn="⚠ Melebihi DD Daily!"
+
+if(total>ddMax) warn="⛔ Melebihi DD Max!"
+
+document.getElementById("warning").innerText=warn
+
+}
+
+
+const ddDailyInput=document.getElementById("ddDaily")
+const ddMaxInput=document.getElementById("ddMax")
+
+ddDailyInput.oninput=calculate
+ddMaxInput.oninput=calculate
+
+addRow()
+addRow()
+
+</script>
+
+</body>
+  </html>
