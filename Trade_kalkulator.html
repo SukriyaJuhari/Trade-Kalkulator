@@ -39,15 +39,47 @@ margin-bottom:20px;
 box-shadow:0 4px 20px rgba(0,0,0,0.4);
 }
 
-.inputs{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
+@media(max-width:600px) {
+  
+  .inputs {
+    grid-template-columns: 1fr;
+  }
+  
+  .input-group.full {
+    grid-column: span 1;
+  }
+  
 }
 
-.inputs div{
-flex:1;
-min-width:120px;
+.inputs{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+}
+
+.input-group{
+display:flex;
+flex-direction:column;
+}
+
+.input-group label{
+font-size:14px;
+margin-bottom:6px;
+opacity:0.9;
+}
+
+.input-group input{
+height:45px;
+padding:10px;
+border-radius:8px;
+border:none;
+background:#020617;
+color:white;
+font-size:16px;
+}
+
+.input-group.full{
+grid-column:span 2;
 }
 
 input,select{
@@ -194,14 +226,29 @@ font-size:14px;
 
 <div class="inputs">
 
-<div>
-<label>DD Daily</label>
-<input id="ddDaily" type="number" value="150">
+<div class="input-group full">
+<label>Modal</label>
+<input id="modal" type="number" value="10000">
 </div>
 
-<div>
-<label>DD Max</label>
-<input id="ddMax" type="number" value="190">
+<div class="input-group">
+<label>DD Daily %</label>
+<input id="ddDailyPercent" type="number" value="3">
+</div>
+
+<div class="input-group">
+<label>Safe DD Daily ($)</label>
+<input id="tolDaily" type="number" value="100">
+</div>
+
+<div class="input-group">
+<label>DD Max %</label>
+<input id="ddMaxPercent" type="number" value="4">
+</div>
+
+<div class="input-group">
+<label>Safe DD Max ($)</label>
+<input id="tolMax" type="number" value="100">
 </div>
 
 </div>
@@ -334,14 +381,25 @@ document.querySelectorAll(".risk").forEach(i=>{
 total+=parseFloat(i.value)||0
 })
 
-const ddDaily=parseFloat(ddDailyInput.value)||0
-const ddMax=parseFloat(ddMaxInput.value)||0
+const modal=parseFloat(modalInput.value)||0
+
+const ddDailyPercent=parseFloat(ddDailyPercentInput.value)||0
+const ddMaxPercent=parseFloat(ddMaxPercentInput.value)||0
+
+const tolDaily=parseFloat(tolDailyInput.value)||0
+const tolMax=parseFloat(tolMaxInput.value)||0
+
+
+const ddDaily=(modal*ddDailyPercent/100)-tolDaily
+const ddMax=(modal*ddMaxPercent/100)-tolMax
+
 
 document.getElementById("totalRisk").innerText=total.toFixed(2)
 
 document.getElementById("remainDaily").innerText=(ddDaily-total).toFixed(2)
 
 document.getElementById("remainMax").innerText=(ddMax-total).toFixed(2)
+
 
 let percent=(total/ddMax)*100
 if(percent<0)percent=0
@@ -350,22 +408,32 @@ document.getElementById("riskPercent").innerText=percent.toFixed(1)+"%"
 
 document.getElementById("bar").style.width=percent+"%"
 
+
 let warn=""
 
-if(total>ddDaily) warn="⚠ Melebihi DD Daily!"
+if(total>ddDaily) warn="⚠ Melebihi DD Daily Limit!"
 
-if(total>ddMax) warn="⛔ Melebihi DD Max!"
+if(total>ddMax) warn="⛔ Melebihi DD Max Limit!"
 
 document.getElementById("warning").innerText=warn
 
 }
 
 
-const ddDailyInput=document.getElementById("ddDaily")
-const ddMaxInput=document.getElementById("ddMax")
+const modalInput=document.getElementById("modal")
 
-ddDailyInput.oninput=calculate
-ddMaxInput.oninput=calculate
+const ddDailyPercentInput=document.getElementById("ddDailyPercent")
+const ddMaxPercentInput=document.getElementById("ddMaxPercent")
+
+const tolDailyInput=document.getElementById("tolDaily")
+const tolMaxInput=document.getElementById("tolMax")
+
+modalInput.oninput=calculate
+ddDailyPercentInput.oninput=calculate
+ddMaxPercentInput.oninput=calculate
+tolDailyInput.oninput=calculate
+tolMaxInput.oninput=calculate
+
 
 addRow()
 addRow()
